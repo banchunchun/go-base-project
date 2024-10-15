@@ -1,0 +1,11 @@
+database:
+  dialect: mysql
+  host: 172.17.81.10
+  port: 18806
+  dbname: base_server
+  username: root
+  password: Arcvideo@01
+  migration: true
+
+task:
+  keepTask: true
