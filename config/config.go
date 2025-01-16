@@ -44,6 +44,8 @@ type Config struct {
 		Key   string `yaml:"key" default:"api-security-key"`
 		Value string `yaml:"value"`
 	} `yaml:"querySecret"`
+
+	AiAddress string `yaml:"aiAddress" default:"http://172.17.81.10:18900"`
 }
 
 type AppConfig struct {

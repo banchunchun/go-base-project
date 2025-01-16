@@ -10,6 +10,7 @@ import (
 	"com.banxiaoxiao.server/repo"
 	"com.banxiaoxiao.server/repository"
 	"com.banxiaoxiao.server/router"
+	"com.banxiaoxiao.server/service"
 	"com.banxiaoxiao.server/util"
 	"context"
 	"flag"
@@ -50,7 +51,7 @@ func main() {
 	if etcdClient != nil {
 		etcdClient.Leader()
 	}
-
+	service.InitService()
 	router.Init(e)
 	middleware.InitLoggerMiddleware(e)
 

@@ -5,6 +5,8 @@ go 1.22
 toolchain go1.22.5
 
 require (
+	github.com/bitly/go-simplejson v0.5.0
+	github.com/go-netty/go-netty v1.6.7
 	github.com/google/uuid v1.3.1
 	github.com/jinzhu/configor v1.2.2
 	github.com/jinzhu/gorm v1.9.16
@@ -18,6 +20,7 @@ require (
 
 require (
 	github.com/BurntSushi/toml v1.2.0 // indirect
+	github.com/bmizerany/assert v0.0.0-20160611221934-b7ed37b82869 // indirect
 	github.com/coreos/go-semver v0.3.0 // indirect
 	github.com/coreos/go-systemd/v22 v22.3.2 // indirect
 	github.com/go-sql-driver/mysql v1.5.0 // indirect
@@ -25,6 +28,7 @@ require (
 	github.com/golang-jwt/jwt v3.2.2+incompatible // indirect
 	github.com/golang/protobuf v1.5.4 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
+	github.com/kr/pretty v0.3.1 // indirect
 	github.com/labstack/gommon v0.4.2 // indirect
 	github.com/lib/pq v1.1.1 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect

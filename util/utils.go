@@ -6,18 +6,22 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
+	"github.com/bitly/go-simplejson"
 	"github.com/google/uuid"
 	"io"
+	"math/rand"
 	"net"
 	"net/http"
 	"net/url"
 	"os"
 	"path/filepath"
 	"runtime"
+	"runtime/debug"
 	"sort"
 	"strconv"
 	"strings"
 	"sync"
+	"time"
 )
 
 func CopyFile(src string, dst string) error {
@@ -61,20 +65,6 @@ func DumpBytes(fileName string, data []byte) error {
 	}
 	defer f.Close()
 	_, err = f.Write(data)
-	return err
-}
-
-func DumpInterface(fileName string, data interface{}) error {
-	r, err := json.Marshal(data)
-	if err != nil {
-		return err
-	}
-	f, err := os.Create(fileName)
-	if err != nil {
-		return err
-	}
-	defer f.Close()
-	_, err = f.Write(r)
 	return err
 }
 
@@ -240,32 +230,6 @@ func UrlToFile(fullURLFile string, fullName string, fileExt string) (*os.File, e
 	return tempFile, nil
 }
 
-func UrlToFile2(fullURLFile string, fullName string) (*os.File, error) {
-	var err error
-	var tempFile *os.File
-	tempFile, err = os.Create(fullName)
-	if err != nil {
-		return nil, err
-	}
-	defer tempFile.Close()
-	client := http.Client{
-		CheckRedirect: func(r *http.Request, via []*http.Request) error {
-			r.URL.Opaque = r.URL.Path
-			return nil
-		},
-	}
-	resp, err := client.Get(fullURLFile)
-	if err != nil {
-		return nil, err
-	}
-	defer resp.Body.Close()
-	_, err = io.Copy(tempFile, resp.Body)
-	if err != nil {
-		return nil, err
-	}
-	return tempFile, nil
-}
-
 func XmlEscape(s string) string {
 	s = strings.Replace(s, "&", "&amp;", -1)
 	s = strings.Replace(s, "\"", "&quot;", -1)
@@ -359,4 +323,72 @@ func ParseJsonArray(a []interface{}, f func(k string, v interface{})) {
 		default:
 		}
 	}
+}
+
+func GetHostName() string {
+	//cmd:= exec.Command("uname","-n")
+	//output,err:= cmd.Output()
+	//if err != nil
+	hostname, err := os.Hostname()
+	if err != nil {
+		return "LOCALHSOT.LOCALDOMAIN"
+	}
+	return strings.ToUpper(hostname)
+}
+
+func GetCurrentServerIp(serverAddress string) string {
+	url := strings.Replace(serverAddress, "http://", "", -1)
+	url = strings.Replace(url, ":18500", "", -1)
+	return url
+}
+
+func AppendToFile(file *os.File, appendContent string) {
+	_, err := file.WriteString(appendContent)
+	if err != nil {
+		return
+	}
+}
+
+func WriteBase64ToFileName(base64Data string, targetFileName string) error {
+	decodeString, err := base64.StdEncoding.DecodeString(base64Data)
+	if err != nil {
+		return err
+	}
+	return DumpBytes(targetFileName, decodeString)
+}
+
+func ConvertSimpleJsonParam(params interface{}) (*simplejson.Json, error) {
+	m, err := json.Marshal(params)
+	if err != nil {
+		return nil, err
+	}
+	p, err := simplejson.NewJson(m)
+	if err != nil {
+		return nil, err
+	}
+	return p, nil
+}
+
+func ConvertParam[T any](params interface{}) (*T, error) {
+	a := new(T)
+	d, err := json.Marshal(params)
+	if err != nil {
+		return nil, err
+
+	}
+	err = json.Unmarshal(d, a)
+	if err != nil {
+		return nil, err
+	}
+	return a, nil
+}
+
+func GenerateRandomVal(start int64, end int64) int64 {
+	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	return r.Int63n(end-start+1) + start
+}
+
+func DumpCrashStack() {
+	fileName := fmt.Sprintf("crash_dump_%s.txt", time.Now().Format("20060102150405"))
+	os.WriteFile(fileName, debug.Stack(), 0644)
 }

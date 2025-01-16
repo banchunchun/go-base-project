@@ -121,9 +121,10 @@ func SplitMultiLineString(is string, removeEmpty bool) []string {
 	return r
 }
 
-func ParseTranscoderProgress(s string, prefix string) (int32, float32, bool) {
+func ParseTranscoderProgress(s string, prefix string) (int32, float32, int64, bool) {
 	progress := int32(0)
 	speed := float32(0.0)
+	duration := int64(0)
 	found := false
 	i := strings.Index(s, prefix)
 	if i > 0 {
@@ -137,6 +138,18 @@ func ParseTranscoderProgress(s string, prefix string) (int32, float32, bool) {
 			speedStr := s[i+len(prefix):]
 			k = strings.Index(speedStr, "]")
 			if k > 0 {
+				durationStr := speedStr[k:]
+				j := strings.LastIndex(durationStr, "[")
+				if j > 0 {
+					durationStr = durationStr[j+1:]
+					j = strings.Index(durationStr, "]")
+					if j > 0 {
+						durationStr = durationStr[:j]
+						durationStr = strings.TrimSpace(durationStr)
+						durationStr = strings.ReplaceAll(durationStr, "(ms)", "")
+						duration = ConvertToInt64(durationStr)
+					}
+				}
 				speedStr = speedStr[:k]
 				speedStr = strings.TrimSpace(speedStr)
 				speed = ConvertToFloat32(speedStr)
@@ -144,7 +157,7 @@ func ParseTranscoderProgress(s string, prefix string) (int32, float32, bool) {
 			}
 		}
 	}
-	return progress, speed, found
+	return progress, speed, duration, found
 }
 
 func GetUrlImgBase64(path string) (baseImg string, err error) {

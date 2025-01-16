@@ -33,4 +33,5 @@ func Init(e *echo.Echo) {
 	e.Use(middleware.Recover())
 	e.Use(middleware.BodyLimit("100G"))
 
+	initTask(e)
 }

@@ -1,11 +1,14 @@
 database:
   dialect: mysql
-  host: 172.17.81.10
+  host: 172.16.15.41
   port: 18806
-  dbname: base_server
+  dbname: fsserver
   username: root
+  #password: CsRd_#2018#@
   password: Arcvideo@01
-  migration: true
+  migration: false
 
 task:
   keepTask: true
+
+aiAddress: http://172.16.15.17:18500
